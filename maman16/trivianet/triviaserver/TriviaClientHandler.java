@@ -40,6 +40,7 @@ public class TriviaClientHandler extends Thread {
     }
 
     private void handleTriviaMessage(TriviaMessage triviaMessage) {
+        System.out.println("Got client message: " + triviaMessage);
         return;
     }
 

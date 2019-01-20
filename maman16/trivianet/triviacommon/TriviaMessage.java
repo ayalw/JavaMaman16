@@ -1,6 +1,8 @@
 package maman16.trivianet.triviacommon;
 
-public class TriviaMessage {
+import java.io.Serializable;
+
+public class TriviaMessage implements Serializable {
 
     private TriviaMessageType m_messageType;
 
@@ -10,5 +12,10 @@ public class TriviaMessage {
 
     public TriviaMessageType getMessageType() {
         return m_messageType;
+    }
+
+    @Override
+    public String toString() {
+        return "[Type: " + m_messageType + "]";
     }
 }
