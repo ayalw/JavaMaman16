@@ -1,6 +1,7 @@
 package maman16.trivianet.triviaserver;
 
 import maman16.trivianet.triviacommon.TriviaMessage;
+import maman16.trivianet.triviacommon.TriviaMessageType;
 
 import java.io.*;
 import java.net.Socket;
@@ -27,14 +28,20 @@ public class TriviaClientHandler extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        while (true) {
+        boolean isSessionAlive = true;
+        while (isSessionAlive) {
             try {
                 TriviaMessage triviaMessage = (TriviaMessage) is.readObject();
                 handleTriviaMessage(triviaMessage);
+                if (triviaMessage.getMessageType() == TriviaMessageType.CLIENT_MESSAGE_END_SESSION) {
+                    isSessionAlive = false;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
+                isSessionAlive = false;
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+                isSessionAlive = false;
             }
         }
     }
