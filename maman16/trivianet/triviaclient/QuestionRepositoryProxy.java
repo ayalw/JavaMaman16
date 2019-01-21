@@ -8,7 +8,9 @@ import java.util.UUID;
 
 public class QuestionRepositoryProxy implements QuestionProvider {
 
+    private Socket m_socket;
     private ObjectOutputStream m_out;
+    private ObjectInputStream m_in;
 
     public QuestionRepositoryProxy() {
         System.out.println("Welcome to Trivia Client!");
@@ -16,31 +18,21 @@ public class QuestionRepositoryProxy implements QuestionProvider {
         int port_no = 3333;
         UUID uuid = java.util.UUID.randomUUID();
         TriviaMessage message;
-        Socket s = null;
-        ObjectInputStream in = null;
-        //ObjectOutputStream out = null;
         try {
-            s = new Socket(hostname, port_no);
-            in = new ObjectInputStream(new BufferedInputStream(s.getInputStream()));
-            m_out = new ObjectOutputStream(new BufferedOutputStream(s.getOutputStream()));
+            m_socket = new Socket(hostname, port_no);
+            m_in = new ObjectInputStream(new BufferedInputStream(m_socket.getInputStream()));
+            m_out = new ObjectOutputStream(new BufferedOutputStream(m_socket.getOutputStream()));
 
             // Start session
             message = new ClientMessageStartSession(uuid);
             m_out.writeObject(message);
             m_out.flush();
 
-//            // Request question
-//            message = new ClientMessageRequestQuestion();
-//            out.writeObject(message);
-//            out.flush();
-//
-//            // End session
-//            message = new ClientMessageEndSession();
-//            out.writeObject(message);
-//            out.flush();
+            m_in.readObject();
 
-            System.out.println("Sent obj");
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -51,8 +43,15 @@ public class QuestionRepositoryProxy implements QuestionProvider {
         try {
             m_out.writeObject(message);
             m_out.flush();
-            //m_in.readObject();//TODO
+            TriviaMessage triviaMessage = (TriviaMessage) m_in.readObject();
+            if (triviaMessage.getMessageType() == TriviaMessageType.SERVER_MESSAGE_PROVIDE_QUESTION) {
+                ServerMessageProvideQuestion msg = (ServerMessageProvideQuestion)triviaMessage;
+                return msg.getQuestion();
+            }
+            return null;
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;//TODO
@@ -60,6 +59,19 @@ public class QuestionRepositoryProxy implements QuestionProvider {
 
     @Override
     public boolean hasUnusedQuestions() {
+        TriviaMessage msg = new ClientMessageHasUnusedQuestions();
+        try {
+            m_out.writeObject(msg);
+            m_out.flush();
+            TriviaMessage incomingMsg = (TriviaMessage) m_in.readObject();
+            if (incomingMsg.getMessageType() == TriviaMessageType.SERVER_MESSAGE_RESPONSE_YES) {
+                return true;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 }

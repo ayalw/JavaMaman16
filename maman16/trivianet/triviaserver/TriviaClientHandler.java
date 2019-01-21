@@ -1,7 +1,6 @@
 package maman16.trivianet.triviaserver;
 
-import maman16.trivianet.triviacommon.TriviaMessage;
-import maman16.trivianet.triviacommon.TriviaMessageType;
+import maman16.trivianet.triviacommon.*;
 
 import java.io.*;
 import java.net.Socket;
@@ -9,6 +8,10 @@ import java.net.Socket;
 public class TriviaClientHandler extends Thread {
 
     protected Socket m_socket;
+    private ObjectInputStream m_in;
+    private ObjectOutputStream m_out;
+    private TriviaGameEngine m_engine;
+    private Question m_currentQuestion;
 
     public TriviaClientHandler(Socket clientSocket) {
         m_socket = clientSocket;
@@ -16,26 +19,47 @@ public class TriviaClientHandler extends Thread {
 
     public void run() {
         System.out.println("Starting client handler: " + getId());
-        ObjectOutputStream os;
-        ObjectInputStream is = null;
         try {
-            os = new ObjectOutputStream(m_socket.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            is = new ObjectInputStream(m_socket.getInputStream());
+            m_out = new ObjectOutputStream(m_socket.getOutputStream());
+            m_in = new ObjectInputStream(m_socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
         }
         boolean isSessionAlive = true;
+        m_engine = new TriviaGameEngine("input.txt");
+        m_currentQuestion = m_engine.getNextQuestion();
+        TriviaMessage incomingMsg;
+        TriviaMessage outgoingMsg = null;
         while (isSessionAlive) {
             try {
-                TriviaMessage triviaMessage = (TriviaMessage) is.readObject();
-                handleTriviaMessage(triviaMessage);
-                if (triviaMessage.getMessageType() == TriviaMessageType.CLIENT_MESSAGE_END_SESSION) {
-                    isSessionAlive = false;
+                incomingMsg = (TriviaMessage) m_in.readObject();
+                if (incomingMsg.getMessageType() == TriviaMessageType.CLIENT_MESSAGE_START_SESSION) {
+                    isSessionAlive = true;
+                    outgoingMsg = new ServerMessageResponseOk();
                 }
+                if (incomingMsg.getMessageType() == TriviaMessageType.CLIENT_MESSAGE_HAS_UNUSED_QUESTIONS) {
+                    if (m_engine.hasUnusedQuestion()) {
+                        outgoingMsg = new ServerMessageResponseYes();
+                    }
+                    else {
+                        outgoingMsg = new ServerMessageResponseNo();
+                    }
+                }
+                if (incomingMsg.getMessageType() == TriviaMessageType.CLIENT_MESSAGE_END_SESSION) {
+                    isSessionAlive = false;
+                    outgoingMsg = new ServerMessageResponseOk();
+                }
+                if (incomingMsg.getMessageType() == TriviaMessageType.CLIENT_MESSAGE_REQUEST_QUESTION) {
+                    Question q = m_engine.getNextQuestion();
+                    if (q == null) {
+                        outgoingMsg = new ServerMessageNoMoreQuestions();
+                    }
+                    else {
+                        outgoingMsg = new ServerMessageProvideQuestion(q);
+                    }
+                }
+                m_out.writeObject(outgoingMsg);
+                m_out.flush();
             } catch (IOException e) {
                 e.printStackTrace();
                 isSessionAlive = false;
@@ -45,10 +69,4 @@ public class TriviaClientHandler extends Thread {
             }
         }
     }
-
-    private void handleTriviaMessage(TriviaMessage triviaMessage) {
-        System.out.println("Got client message: " + triviaMessage);
-        return;
-    }
-
 }

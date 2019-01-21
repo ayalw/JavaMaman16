@@ -1,9 +1,11 @@
 package maman16.trivianet.triviacommon;
 
+import java.io.Serializable;
+
 /**
  * Data structure for all information related to a single question.
  */
-public class Question {
+public class Question implements Serializable {
 
     /**
      * The question itself.
