@@ -3,16 +3,17 @@ package maman16.students.udpclient;
 import javax.swing.*;
 
 public class UdpClientMain {
+    /**
+     * Main class to run the GUI
+     * @param args
+     */
     public static void main(String[] args) {
-        String serverAddress;
-        int serverPort;
+        String serverAddress = null;
+        int serverPort = 0;
         String studentName = null;
         if (args.length < 4) {
             System.out.println("Usage: UdpClientMain [Server Address] [Server Port] [First Name] [Last Name]");
-            //System.exit(0);
-            System.out.println("Using default configuration...");
-            serverAddress = "localhost";
-            serverPort = 4445;
+            System.out.println("Example: UdpClientMain localhost 4445 Mick Jagger");
         }
         else {
             serverAddress = args[0];

@@ -10,11 +10,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * UDP server implementation.
+ */
 public class StudentsUdpServer {
 
+    /**
+     * Mapping of known students and their connection status.
+     */
     private Map<String, StudentConnectionStatus> m_studentConnectionStatus;
+
+    /**
+     * Server socket
+     */
     private DatagramSocket m_socket;
 
+    /**
+     * Constructor
+     * @param namesFile
+     */
     public StudentsUdpServer(String namesFile) {
         m_studentConnectionStatus = new HashMap<>();
         URL url = getClass().getResource("StudentNames.txt");
@@ -33,6 +47,10 @@ public class StudentsUdpServer {
         }
     }
 
+    /**
+     * Start work loop - listen for incoming client packets.
+     * Upon incoming packet, locate the correct student map entry, update it and send response with list of all connections.
+     */
     public void startRunning() {
         System.out.println("Starting UDP server...");
         try {

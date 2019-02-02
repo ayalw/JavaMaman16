@@ -6,6 +6,11 @@ import java.net.Socket;
 
 public class ServerMain {
 
+    /**
+     * Main server application class with working loop.
+     * For every incoming TCP message, start a handler thread to send questions to the client.
+     * @param args
+     */
     public static void main(String[] args) {
         System.out.println("Starting Trivia Server...");
         ServerSocket serverSocket = null;

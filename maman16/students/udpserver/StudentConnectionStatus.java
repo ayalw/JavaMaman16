@@ -2,12 +2,32 @@ package maman16.students.udpserver;
 
 import java.net.InetAddress;
 
+/**
+ * Data structure to maintain connection status (history of last one connection)
+ */
 public class StudentConnectionStatus {
 
+    /**
+     * Client address
+     */
     private InetAddress m_address;
+
+    /**
+     * Client port
+     */
     private int m_port;
+
+    /**
+     * Is currently connected
+     */
     private boolean m_isConnected;
 
+    /**
+     * Constructor
+     * @param address
+     * @param port
+     * @param isConnected
+     */
     public StudentConnectionStatus(InetAddress address, int port, boolean isConnected) {
         m_address = address;
         m_port = port;

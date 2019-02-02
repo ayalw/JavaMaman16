@@ -5,18 +5,47 @@ import maman16.trivianet.triviacommon.*;
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * Handler thread to manage client session, send it questions and score.
+ */
 public class TriviaClientHandler extends Thread {
 
+    /**
+     * TCP socket with specific client.
+     */
     protected Socket m_socket;
+
+    /**
+     * Stream for TriviaMessage objects.
+     */
     private ObjectInputStream m_in;
+
+    /**
+     * Stream for TriviaMessage objects.
+     */
     private ObjectOutputStream m_out;
+
+    /**
+     * Game engine to evaluate questions, answers and score.
+     */
     private TriviaGameEngine m_engine;
+
+    /**
+     * Current question sent to client.
+     */
     private Question m_currentQuestion;
 
+    /**
+     * Constructor
+     * @param clientSocket
+     */
     public TriviaClientHandler(Socket clientSocket) {
         m_socket = clientSocket;
     }
 
+    /**
+     * Main work loop - respond to different types of TriviaMessage objects arriving from client.
+     */
     public void run() {
         System.out.println("Starting client handler: " + getId());
         try {

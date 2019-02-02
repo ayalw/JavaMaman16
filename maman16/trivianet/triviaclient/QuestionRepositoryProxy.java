@@ -1,17 +1,33 @@
 package maman16.trivianet.triviaclient;
 
 import maman16.trivianet.triviacommon.*;
-
 import java.io.*;
 import java.net.Socket;
 import java.util.UUID;
 
+/**
+ * Proxy for question repository from which the client pulls random questions.
+ */
 public class QuestionRepositoryProxy implements QuestionProvider {
 
+    /**
+     * TCP socket for the trivia server.
+     */
     private Socket m_socket;
+
+    /**
+     * Stream for 'Trivia message' objects.
+     */
     private ObjectOutputStream m_out;
+
+    /**
+     * Stream for 'Trivia message' objects.
+     */
     private ObjectInputStream m_in;
 
+    /**
+     * Constructor
+     */
     public QuestionRepositoryProxy() {
         System.out.println("Welcome to Trivia Client!");
         String hostname = "localhost";
@@ -37,6 +53,10 @@ public class QuestionRepositoryProxy implements QuestionProvider {
         }
     }
 
+    /**
+     * Ask for random question from the server.
+     * @return
+     */
     @Override
     public Question getRandomQuestion() {
             TriviaMessage message = new ClientMessageRequestQuestion();
@@ -54,9 +74,13 @@ public class QuestionRepositoryProxy implements QuestionProvider {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        return null;//TODO
+        return null;
     }
 
+    /**
+     * Check if remaining questions exist.
+     * @return
+     */
     @Override
     public boolean hasUnusedQuestions() {
         TriviaMessage msg = new ClientMessageHasUnusedQuestions();

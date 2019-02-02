@@ -1,17 +1,38 @@
 package maman16.students.udpclient;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Panel with connect\disconnect buttons and text area to display list of connected students.
+ */
 public class StudentClientPanel extends JPanel implements IUdpMessageHandler {
 
+    /**
+     * reference to the backend controller module.
+     */
     private UdpClientController m_controller;
+
+    /**
+     * Connect button
+     */
     private JButton m_btnConnect;
+
+    /**
+     * Disconnect button
+     */
     private JButton m_btnDisconnect;
+
+    /**
+     * Text area for list of students received from server.
+     */
     private JTextArea m_txtAreaStudents;
 
+    /**
+     * Constructor
+     * @param controller
+     */
     public StudentClientPanel(UdpClientController controller) {
         super();
         m_controller = controller;
@@ -43,6 +64,9 @@ public class StudentClientPanel extends JPanel implements IUdpMessageHandler {
         setVisible(true);
     }
 
+    /**
+     * Update UI buttons
+     */
     @Override
     public void repaint() {
         super.repaint();
@@ -57,6 +81,10 @@ public class StudentClientPanel extends JPanel implements IUdpMessageHandler {
         }
     }
 
+    /**
+     * Print incoming server message - list of connected students.
+     * @param message
+     */
     @Override
     public void onUdpMessageArrived(String message) {
         m_txtAreaStudents.setText("[ONLINE] " + message);

@@ -3,12 +3,31 @@ package maman16.students.udpclient;
 import java.io.IOException;
 import java.net.*;
 
+/**
+ * Thread to listen for incoming UDP packet.
+ */
 public class UdpListener extends Thread {
 
+    /**
+     * Reference to the controller class.
+     */
     private UdpClientController m_controller;
+
+    /**
+     * The subscribed handler.
+     */
     private IUdpMessageHandler m_handler;
+
+    /**
+     * Should listener continue to run.
+     */
     private boolean m_isAlive;
 
+    /**
+     * Constructor.
+     * @param controller
+     * @param handler
+     */
     public UdpListener(UdpClientController controller, IUdpMessageHandler handler) {
         super();
         m_controller = controller;
@@ -16,6 +35,9 @@ public class UdpListener extends Thread {
         m_isAlive = false;
     }
 
+    /**
+     * Working loop - listen on UDP socket and invoke handler on every incoming packet.
+     */
     @Override
     public void run() {
         m_isAlive = true;

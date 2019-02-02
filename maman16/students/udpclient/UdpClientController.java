@@ -3,6 +3,9 @@ package maman16.students.udpclient;
 import java.io.IOException;
 import java.net.*;
 
+/**
+ * Backend logic for sending UDP packet and receiving response.
+ */
 public class UdpClientController {
     private String m_serverAddress;
     private int m_serverPort;
@@ -11,12 +14,19 @@ public class UdpClientController {
     private String m_connectedStudents;
     private DatagramSocket m_socket;
 
+    /**
+     * Constructor
+     * @param serverAddress
+     * @param serverPort
+     * @param studentName
+     */
     public UdpClientController(String serverAddress, int serverPort, String studentName) {
         m_serverAddress = serverAddress;
         m_serverPort = serverPort;
         m_studentName = studentName;
         m_isConnected = false;
     }
+
 
     public String getServerAddress() {
         return m_serverAddress;
@@ -42,10 +52,10 @@ public class UdpClientController {
         m_connectedStudents = connectedStudents;
     }
 
-    public synchronized String getConnectedStudents() {
-        return m_connectedStudents;
-    }
-
+    /**
+     * Connect method will send '+'[Student name] UDP packet to server and start the listening thread.
+     * @param handler
+     */
     public void connect(IUdpMessageHandler handler) {
         byte[] buf = ("+"+m_studentName).getBytes();
         try {
@@ -64,6 +74,9 @@ public class UdpClientController {
         }
     }
 
+    /**
+     * Disconnect method will send the '-'[Student Name] message to server.
+     */
     public void disconnect() {
         byte[] buf = ("-"+m_studentName).getBytes();
         try {
@@ -81,6 +94,10 @@ public class UdpClientController {
         }
     }
 
+    /**
+     * Start the listening thread - will invoke the subscribed handler object for incoming UDP packets.
+     * @param handler
+     */
     public void startListening(IUdpMessageHandler handler) {
         UdpListener listener = new UdpListener(this, handler);
         listener.start();
