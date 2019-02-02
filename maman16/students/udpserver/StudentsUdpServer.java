@@ -44,7 +44,7 @@ public class StudentsUdpServer {
                 //receive request
                 packet = new DatagramPacket(buf, buf.length);
                 m_socket.receive(packet);
-                String message = new String(buf);
+                String message = new String(buf).split("\0")[0];
                 char connectionFlag = message.charAt(0);
                 String name = message.substring(1);
                 if (!m_studentConnectionStatus.containsKey(name)) { // Unrecognized student - ignore!
@@ -52,6 +52,8 @@ public class StudentsUdpServer {
                 }
                 if (connectionFlag == '+') { // Student connect message
                     m_studentConnectionStatus.get(name).setIsConnected(true);
+                    m_studentConnectionStatus.get(name).setAddress(packet.getAddress());
+                    m_studentConnectionStatus.get(name).setPort(packet.getPort());
                 }
                 if (connectionFlag == '-') { // Student disconnect message
                     m_studentConnectionStatus.get(name).setIsConnected(false);

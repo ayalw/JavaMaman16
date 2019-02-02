@@ -23,7 +23,16 @@ public class StudentConnectionStatus {
     public boolean getIsConnected() {
         return m_isConnected;
     }
+
     public void setIsConnected(boolean isConnected) {
         m_isConnected = isConnected;
+    }
+
+    public void setAddress(InetAddress address) {
+        m_address = address;
+    }
+
+    public void setPort(int port) {
+        m_port = port;
     }
 }
