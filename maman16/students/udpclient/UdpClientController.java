@@ -54,6 +54,7 @@ public class UdpClientController {
             m_socket = new DatagramSocket();
             m_socket.send(packet);
             startListening(handler);
+            m_isConnected = true;
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (SocketException e) {
@@ -64,7 +65,20 @@ public class UdpClientController {
     }
 
     public void disconnect() {
-        //TODO
+        byte[] buf = ("-"+m_studentName).getBytes();
+        try {
+            InetAddress address = InetAddress.getByName(m_serverAddress);
+            DatagramPacket packet = new DatagramPacket(buf, buf.length, address, m_serverPort);
+            m_socket = new DatagramSocket();
+            m_socket.send(packet);
+            m_isConnected = false;
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void startListening(IUdpMessageHandler handler) {

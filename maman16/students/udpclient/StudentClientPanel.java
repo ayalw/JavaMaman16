@@ -18,6 +18,7 @@ public class StudentClientPanel extends JPanel implements IUdpMessageHandler {
         m_btnConnect = new JButton("Connect");
         m_btnDisconnect = new JButton("Disconnect");
         m_txtAreaStudents = new JTextArea(20,30);
+        m_txtAreaStudents.setText("[OFFLINE]");
         m_txtAreaStudents.setEditable(false);
         add(m_btnConnect);
         add(m_btnDisconnect);
@@ -27,7 +28,15 @@ public class StudentClientPanel extends JPanel implements IUdpMessageHandler {
             public void actionPerformed(ActionEvent e) {
                 StudentClientPanel parentPanel = StudentClientPanel.this;
                 m_controller.connect((IUdpMessageHandler) parentPanel);
-                //m_controller.startListening((IUdpMessageHandler) getParent());
+                repaint();
+            }
+        });
+
+        m_btnDisconnect.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                m_controller.disconnect();
+                m_txtAreaStudents.setText("[OFFLINE]");
                 repaint();
             }
         });
@@ -50,7 +59,7 @@ public class StudentClientPanel extends JPanel implements IUdpMessageHandler {
 
     @Override
     public void onUdpMessageArrived(String message) {
-        m_txtAreaStudents.setText(message);
+        m_txtAreaStudents.setText("[ONLINE] " + message);
         repaint();
     }
 }
